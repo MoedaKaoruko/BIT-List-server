@@ -14,36 +14,41 @@ import java.util.Date;
 @Table(name = "user")
 public class User implements Serializable {
     @Id
-    @GeneratedValue(generator = "uuid")
-    private String userId;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int userId;
 
-    @Column(nullable = false,length = 50)
+    @Column(name = "username", nullable = false,length = 50)
     private String username;
 
-    @Column(nullable = false,length = 255)
+    @Column(name = "password",nullable = false,length = 255)
     private String password;
 
-    @Column(nullable = false, unique = true)
+    @Column(name = "email", nullable = false, unique = true)
     @Email(message = "请输入正确邮箱格式")
     private String email;
 
+    @Column(name = "token")
     private String token;
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @Column(name = "tokenExpiry")
     private Date tokenExpiry;
 
+    @Column(name = "loginState")
     private Boolean loginState;
 
-    private String teamId;
+    @Column(name = "teamId")
+    private Integer teamId;
 
+    @Column(name = "avatarUri")
     private String avatarUri;
 
-    public String getUserId() {
+    public int getUserId() {
         return userId;
     }
 
-    public void setUserId(String userId) {
+    public void setUserId(int userId) {
         this.userId = userId;
     }
 
@@ -95,11 +100,11 @@ public class User implements Serializable {
         this.loginState = loginState;
     }
 
-    public String getTeamId() {
+    public Integer getTeamId() {
         return teamId;
     }
 
-    public void setTeamId(String teamId) {
+    public void setTeamId(Integer teamId) {
         this.teamId = teamId;
     }
 

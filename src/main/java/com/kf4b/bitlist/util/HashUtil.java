@@ -19,5 +19,6 @@ public class HashUtil {
 
     public static void main(String[] args) {
         System.out.println(getHash("123456"));
+
     }
 }

@@ -12,9 +12,9 @@ import java.util.List;
 @Table(name = "task")
 public class Task {
     @Id
-    @GeneratedValue(generator = "uuid")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
-    private String id;
+    private int id;
 
     @Column(name = "title", nullable = false)
     private String title;
@@ -49,10 +49,11 @@ public class Task {
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "attachment_id")
-    private List<Attachment> attachments = new ArrayList<>();
+    private List<FileBlob> fileBlobs = new ArrayList<>();
 
+    // 所属用户Id
     @Column(name = "assigned_to")
-    private String assignedTo;
+    private Integer assignedTo;
 
     @Column(name = "is_team_task", nullable = false)
     private boolean isTeamTask = false;
@@ -60,11 +61,10 @@ public class Task {
     @ManyToOne
     private Team teamId;
 
-    @ManyToOne
-    private Task parentTask;
-
     @Column(name = "weight", nullable = false)
     private Integer weight = 1;
+
+    private Integer parentTaskId;
 
     public enum Priority {
         LOW, MEDIUM, HIGH
@@ -74,11 +74,11 @@ public class Task {
         TODO, IN_PROGRESS, DONE
     }
 
-    public String getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
@@ -146,19 +146,19 @@ public class Task {
         isDeleted = deleted;
     }
 
-    public List<Attachment> getAttachments() {
-        return attachments;
+    public List<FileBlob> getAttachments() {
+        return fileBlobs;
     }
 
-    public void setAttachments(List<Attachment> attachments) {
-        this.attachments = attachments;
+    public void setAttachments(List<FileBlob> fileBlobs) {
+        this.fileBlobs = fileBlobs;
     }
 
-    public String getAssignedTo() {
+    public Integer getAssignedTo() {
         return assignedTo;
     }
 
-    public void setAssignedTo(String assignedTo) {
+    public void setAssignedTo(Integer assignedTo) {
         this.assignedTo = assignedTo;
     }
 
@@ -178,12 +178,15 @@ public class Task {
         this.teamId = teamId;
     }
 
-    public Task getParentTask() {
-        return parentTask;
-    }
+    //public Task getParentTask() {
+        //return parentTask;
+    //}
+
+    public Integer getParentTaskId() { return this.parentTaskId; }
 
     public void setParentTask(Task parentTask) {
-        this.parentTask = parentTask;
+        //this.parentTask = parentTask;
+        this.parentTaskId = parentTask.id;
     }
 
     public Integer getWeight() {
