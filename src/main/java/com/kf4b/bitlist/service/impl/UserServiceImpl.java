@@ -25,10 +25,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User getUserById(Integer userId) {
-        String sql = "SELECT * FROM testtab1";
-        List<Map<String,Object>> list=jdbcTemplate.queryForList(sql);
-        System.out.println(list);
-        User x =  userRepository.findById(userId);
+        User x =  userRepository.findById(userId).get();
         return x == null ? new User() : x;
     }
 
