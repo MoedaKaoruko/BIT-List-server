@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -51,5 +52,15 @@ public class MindedItemServiceImpl implements MindedItemService {
             sum = sum + element.getDurationInSeconds();
         }
         return sum;
+    }
+
+    @Transactional
+    public void updateMindedItemById(Integer id, MindedItem item){
+        Optional<MindedItem> ms = mindedItemRepository.findById(id);
+        MindedItem m = ms.isPresent() ? ms.get() : new MindedItem();
+        m.setTimestamp(item.getTimestamp());
+        m.setDurationInSeconds(item.getDurationInSeconds());
+        m.setUserId(item.getUserId());
+        mindedItemRepository.save(m);
     }
 }

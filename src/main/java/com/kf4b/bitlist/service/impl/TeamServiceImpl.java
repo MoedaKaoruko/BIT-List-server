@@ -39,7 +39,8 @@ public class TeamServiceImpl implements TeamService {
 
     @Transactional
     public void updateTeamById(Integer teamId, Team team){
-        Team t = teamRepository.findById(teamId).get();
+        Optional<Team> ts = teamRepository.findById(teamId);
+        Team t = ts.isPresent() ? ts.get() : new Team();
         t.setName(team.getName());
         t.setDescription(team.getDescription());
         t.getMembers().clear();

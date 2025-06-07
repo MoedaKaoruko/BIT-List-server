@@ -48,7 +48,8 @@ public class UserServiceImpl implements UserService {
 
     @Transactional
     public void updateUserById(Integer userId, User user){
-        User u = userRepository.findById(userId).get();
+        Optional<User> us = userRepository.findById(userId);
+        User u = us.isPresent() ? us.get() : new User();
         u.setEmail(user.getEmail());
         u.setUsername(user.getUsername());
         u.setBirth(user.getBirth());

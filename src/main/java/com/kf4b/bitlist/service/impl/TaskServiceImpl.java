@@ -52,7 +52,8 @@ public class TaskServiceImpl implements TaskService {
 
     @Transactional
     public void updateTaskById(Integer taskId, Task task){
-        Task x = taskRepository.findById(taskId).get();
+        Optional<Task> xs = taskRepository.findById(taskId);
+        Task x = xs.isPresent() ? xs.get() : new Task();
         x.setDeleted(task.isDeleted());
         x.setOrder(task.getOrder());
         x.setAssignedTo(task.getAssignedTo());

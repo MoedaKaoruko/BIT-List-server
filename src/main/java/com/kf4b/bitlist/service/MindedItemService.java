@@ -14,4 +14,7 @@ public interface MindedItemService {
     // 根据用户id获取其所有的专注事项并返回所有专注时间的总和（单位：秒）
     Integer totalDurationInSeconds(Integer userId);
 
+    // 更新或插入新记录
+    void updateMindedItemById(Integer id, MindedItem item);
+
 }
