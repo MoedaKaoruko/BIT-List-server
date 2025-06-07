@@ -31,7 +31,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         user.setEmail("test@email");
         user.setUsername("test");
         user.setPassword("a045f8516fb790bf74fcd65f017d8852");
-        user.setUserId(1111);
+        user.setUserId("1111");
 
         // 为用户添加权限，这里简单添加一个 ROLE_USER 角色
         List<GrantedAuthority> authorities = new ArrayList<>();

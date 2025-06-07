@@ -4,37 +4,41 @@ import javax.persistence.*;
 import java.sql.Blob;
 
 @Entity
-@Table(name = "fileblob")
+@Table(name = "file")
 public class FileBlob {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer fileId;
+    @GeneratedValue(generator = "uuid")
+    private String file_id;
 
-    @Column(nullable = false,length = 255)
-    private String fileName;
+    @Column(name="filename", nullable = false,length = 255)
+    private String filename;
 
+    @Column(name="size_in_bytes")
     private Integer sizeInBytes;
 
+    @Column(name="is_deleted", nullable = false)
     private boolean isDeleted = false;
 
+    @Column(name="filedata")
     private Blob filedata;
 
-    private Integer taskId;
+    @Column(name="task_id", nullable = false)
+    private String task_id;
 
-    public Integer getId() {
-        return fileId;
+    public String getId() {
+        return file_id;
     }
 
-    public void setId(Integer id) {
-        this.fileId = id;
+    public void setId(String id) {
+        this.file_id = id;
     }
 
     public String getFileName() {
-        return fileName;
+        return filename;
     }
 
     public void setFileName(String fileName) {
-        this.fileName = fileName;
+        this.filename = fileName;
     }
 
     public Integer getSizeInBytes() {
@@ -61,8 +65,8 @@ public class FileBlob {
         this.filedata = data;
     }
 
-    public Integer getTaskId() { return this.taskId; }
+    public String getTaskId() { return this.task_id; }
 
-    public void setTaskId(Integer taskId) { this.taskId = taskId; }
+    public void setTaskId(String taskId) { this.task_id = taskId; }
 
 }

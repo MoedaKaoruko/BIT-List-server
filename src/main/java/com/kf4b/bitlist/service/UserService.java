@@ -8,7 +8,7 @@ public interface UserService {
     /**
      * 根据用户ID查询用户
      */
-    User getUserById(Integer userId);
+    User getUserById(String userId);
 
     /**
      * 根据用户名查询用户
