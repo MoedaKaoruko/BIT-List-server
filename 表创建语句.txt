@@ -1,0 +1,111 @@
+user表存储个人用户的基本资料
+
+CREATE TABLE user (
+    user_id INT AUTO_INCREMENT PRIMARY KEY,
+    username VARCHAR(50) NOT NULL UNIQUE,
+    password VARCHAR(255) NOT NULL,
+    email VARCHAR(255) NOT NULL UNIQUE,
+    birth DATETIME,
+    login_state BOOLEAN,
+    avatar_uri VARCHAR(255)
+);
+
+
+team 表存储团队的基本信息。
+team_members 表存储团队成员的角色信息。
+team_tasks 表存储团队的任务信息。
+team_pending_join_requests 表存储团队的待处理加入请求。
+
+CREATE TABLE team (
+    team_id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    description TEXT NOT NULL
+);
+
+CREATE TABLE team_members (
+    user_id INT NOT NULL,
+    team_id INT NOT NULL,
+    role ENUM('ADMIN', 'MEMBER') NOT NULL,
+    FOREIGN KEY (team_id) REFERENCES team(team_id) ON DELETE CASCADE,
+    FOREIGN KEY (user_id) REFERENCES user(user_id) ON DELETE CASCADE,  
+    PRIMARY KEY (user_id, team_id)
+);
+
+
+CREATE TABLE team_tasks (
+    team_id INT NOT NULL,
+    task_id INT NOT NULL,
+    FOREIGN KEY (team_id) REFERENCES team(team_id) ON DELETE CASCADE,
+    PRIMARY KEY (team_id, task_id)
+);
+
+CREATE TABLE team_pending_join_requests (
+    team_id INT NOT NULL,
+    user_id INT NOT NULL,
+    FOREIGN KEY (team_id) REFERENCES team(team_id) ON DELETE CASCADE,
+    FOREIGN KEY (user_id) REFERENCES user(user_id) ON DELETE CASCADE,  
+    PRIMARY KEY (team_id, user_id)
+);
+
+
+
+
+task表存储任务的基本信息
+task_tags表存储任务关联的标签信息
+
+CREATE TABLE task (
+    task_id INT AUTO_INCREMENT PRIMARY KEY,
+    title VARCHAR(255) NOT NULL,
+    description TEXT NOT NULL,
+    priority ENUM('LOW', 'MEDIUM', 'HIGH') NOT NULL,
+    status ENUM('TODO', 'IN_PROGRESS', 'DONE') NOT NULL,
+    due_date DATE NOT NULL,
+    task_order INT NOT NULL,
+    is_deleted BOOLEAN DEFAULT FALSE,
+    assigned_to INT,
+    parent_task_id INT,
+    is_team_task BOOLEAN DEFAULT FALSE,
+    weight INT DEFAULT 1,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+CREATE TABLE task_tags (
+    task_id INT,
+    tag VARCHAR(255),
+    PRIMARY KEY (task_id, tag),
+    FOREIGN KEY (task_id) REFERENCES task(task_id) ON DELETE CASCADE
+);
+
+
+
+file表存储用户关联文件信息
+CREATE TABLE file (
+    file_id INT AUTO_INCREMENT PRIMARY KEY,
+    file_name VARCHAR(255) NOT NULL,
+    size_in_bytes INT,
+    is_deleted BOOLEAN DEFAULT FALSE,
+    filedata LONGBLOB,
+    task_id INT,
+    FOREIGN KEY (task_id) REFERENCES task(task_id) ON DELETE CASCADE
+);
+
+CREATE TABLE file (
+    file_id INT NOT NULL,
+    user_id INT NOT NULL,
+    permission ENUM('PERMITTED', 'PROHIBITED') NOT NULL,
+    FOREIGN KEY (file_id) REFERENCES file(file_id) ON DELETE CASCADE,
+    FOREIGN KEY (user_id) REFERENCES user(user_id) ON DELETE CASCADE,  
+    PRIMARY KEY (file_id, user_id)
+);
+    
+
+
+mindeditem表存储用户关联专注记录信息
+CREATE TABLE mindeditem (
+    mindeditem_id INT AUTO_INCREMENT PRIMARY KEY,
+    timestamp DATETIME NOT NULL,
+    duration_in_seconds INT,
+    user_id INT,
+    FOREIGN KEY (user_id) REFERENCES user(user_id) ON DELETE CASCADE
+);

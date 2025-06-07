@@ -14,8 +14,8 @@ import java.util.Date;
 @Table(name = "user")
 public class User implements Serializable {
     @Id
-    @GeneratedValue(generator = "uuid")
-    private String user_id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer user_id;
 
     @Column(name = "username", nullable = false,length = 50)
     private String username;
@@ -27,28 +27,23 @@ public class User implements Serializable {
     @Email(message = "请输入正确邮箱格式")
     private String email;
 
-    @Column(name = "token")
-    private String token;
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    @Column(name = "token_expiry")
-    private Date tokenExpiry;
+    @Column(name = "birth")
+    private Date birth;
 
     @Column(name = "login_state")
     private Boolean loginState;
 
-    @Column(name = "team_id")
-    private Integer teamId;
-
     @Column(name = "avatar_uri")
     private String avatarUri;
 
-    public String getUserId() {
+    public Integer getUserId() {
         return user_id;
     }
 
-    public void setUserId(String userId) {
+    public void setUserId(Integer userId) {
         this.user_id = userId;
     }
 
@@ -76,20 +71,12 @@ public class User implements Serializable {
         this.email = email;
     }
 
-    public String getToken() {
-        return token;
+    public Date getBirth() {
+        return this.birth;
     }
 
-    public void setToken(String token) {
-        this.token = token;
-    }
-
-    public Date getTokenExpiry() {
-        return tokenExpiry;
-    }
-
-    public void setTokenExpiry(Date tokenExpiry) {
-        this.tokenExpiry = tokenExpiry;
+    public void setBirth(Date birth) {
+        this.birth = birth;
     }
 
     public Boolean getLoginState() {
@@ -98,14 +85,6 @@ public class User implements Serializable {
 
     public void setLoginState(Boolean loginState) {
         this.loginState = loginState;
-    }
-
-    public Integer getTeamId() {
-        return teamId;
-    }
-
-    public void setTeamId(Integer teamId) {
-        this.teamId = teamId;
     }
 
     public String getAvatarUri() {

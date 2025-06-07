@@ -12,8 +12,8 @@ import java.util.List;
 @Table(name = "task")
 public class Task {
     @Id
-    @GeneratedValue(generator = "uuid")
-    private String task_id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer task_id;
 
     @Column(name = "title", nullable = false)
     private String title;
@@ -46,25 +46,18 @@ public class Task {
     @Column(name = "is_deleted")
     private boolean isDeleted = false;
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "task_id")
-    private List<FileBlob> files = new ArrayList<>();
-
     // 所属用户Id
     @Column(name = "assigned_to")
-    private String assignedTo;
+    private Integer assignedTo;
 
     @Column(name = "is_team_task", nullable = false)
     private boolean isTeamTask = false;
-
-    @ManyToOne
-    private Team teamId;
 
     @Column(name = "weight", nullable = false)
     private Integer weight = 1;
 
     @Column(name = "parent_task_id")
-    private String parentTaskId;
+    private Integer parentTaskId;
 
     public enum Priority {
         LOW, MEDIUM, HIGH
@@ -74,11 +67,11 @@ public class Task {
         TODO, IN_PROGRESS, DONE
     }
 
-    public String getId() {
+    public Integer getId() {
         return task_id;
     }
 
-    public void setId(String id) {
+    public void setId(Integer id) {
         this.task_id = id;
     }
 
@@ -146,19 +139,11 @@ public class Task {
         isDeleted = deleted;
     }
 
-    public List<FileBlob> getAttachments() {
-        return files;
-    }
-
-    public void setAttachments(List<FileBlob> fileBlobs) {
-        this.files = fileBlobs;
-    }
-
-    public String getAssignedTo() {
+    public Integer getAssignedTo() {
         return assignedTo;
     }
 
-    public void setAssignedTo(String assignedTo) {
+    public void setAssignedTo(Integer assignedTo) {
         this.assignedTo = assignedTo;
     }
 
@@ -170,23 +155,10 @@ public class Task {
         isTeamTask = teamTask;
     }
 
-    public Team getTeamId() {
-        return teamId;
-    }
+    public Integer getParentTaskId() { return this.parentTaskId; }
 
-    public void setTeamId(Team teamId) {
-        this.teamId = teamId;
-    }
-
-    //public Task getParentTask() {
-        //return parentTask;
-    //}
-
-    public String getParentTaskId() { return this.parentTaskId; }
-
-    public void setParentTask(Task parentTask) {
-        //this.parentTask = parentTask;
-        this.parentTaskId = parentTask.task_id;
+    public void setParentTaskId(Integer parentTaskId) {
+        this.parentTaskId = parentTaskId;
     }
 
     public Integer getWeight() {

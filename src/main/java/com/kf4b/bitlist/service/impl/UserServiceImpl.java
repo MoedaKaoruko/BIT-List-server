@@ -8,12 +8,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
+import java.lang.*;
 
 
 @Service
@@ -25,27 +25,37 @@ public class UserServiceImpl implements UserService {
     private UserRepository userRepository;
 
     @Override
-    public User getUserById(String userId) {
-        User x =  userRepository.findById(userId).get();
-        return x == null ? new User() : x;
+    public User getUserById(Integer userId) {
+        Optional<User> a =  userRepository.findById(userId);
+        if(a.isPresent()){
+            User x = a.get();
+            return x;
+        }
+        return null;
     }
 
     @Override
     public User getUserByUsername(String username) {
         User x =  userRepository.findByUsername(username);
-        return x == null ? new User() : x;
+        return x == null ? null : x;
     }
 
     @Override
     public User getUserByEmail(String email) {
-        User user = new User();
-        user.setEmail("test@email");
-        user.setUsername("test");
-        user.setPassword("a045f8516fb790bf74fcd65f017d8852");
-        user.setUserId("1111");
-        return user;
+        User x = userRepository.findByEmail(email);
+        return x == null ? null : x;
+    }
 
-        //return userRepository.findByEmail(email);
+    @Transactional
+    public void updateUserById(Integer userId, User user){
+        User u = userRepository.findById(userId).get();
+        u.setEmail(user.getEmail());
+        u.setUsername(user.getUsername());
+        u.setBirth(user.getBirth());
+        u.setLoginState(user.getLoginState());
+        u.setAvatarUri(user.getAvatarUri());
+        u.setPassword(user.getPassword());
+        userRepository.save(u);
     }
 }
 

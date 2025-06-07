@@ -9,7 +9,7 @@ import java.nio.file.*;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/tasks/{taskId}/attachments")
+@RequestMapping("/tasks/{taskId}/fileblob")
 public class FileBlobController {
     // 假设文件保存目录（可根据实际需求修改）
     private static final String UPLOAD_DIR = "uploads/";

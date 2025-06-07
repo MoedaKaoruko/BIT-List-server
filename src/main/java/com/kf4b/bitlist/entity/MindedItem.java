@@ -13,8 +13,8 @@ import java.util.Date;
 @Table(name = "mindeditem")
 public class MindedItem {
     @Id
-    @GeneratedValue(generator = "uuid")
-    private int mindeditem_id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer mindeditem_id;
 
     @Column(name = "timestamp", nullable = false)
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
@@ -25,7 +25,7 @@ public class MindedItem {
     private Integer durationInSeconds;
 
     @Column(name = "user_id", nullable = false)
-    private String user_id;
+    private Integer userId;
 
     public Integer getId() { return this.mindeditem_id; }
 
@@ -39,7 +39,7 @@ public class MindedItem {
 
     public void setDurationInSeconds(Integer durationInSeconds) { this.durationInSeconds = durationInSeconds; }
 
-    public String getUserId() { return this.user_id; }
+    public Integer getUserId() { return this.userId; }
 
-    public void setUserId(String userId) { this.user_id = userId; }
+    public void setUserId(Integer userId) { this.userId = userId; }
 }
