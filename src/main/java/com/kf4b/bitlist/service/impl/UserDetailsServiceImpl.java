@@ -22,16 +22,10 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         // 从数据库中查找用户
-//        User user = userRepository.findByUsername(username);
-//        if (user == null) {
-//            throw new UsernameNotFoundException("User not found with username: " + username);
-//        }
-
-        User user = new User();
-        user.setEmail("test@email");
-        user.setUsername("test");
-        user.setPassword("a045f8516fb790bf74fcd65f017d8852");
-        user.setUserId("1111");
+        User user = userRepository.findByUsername(username);
+        if (user == null) {
+            throw new UsernameNotFoundException("User not found with username: " + username);
+        }
 
         // 为用户添加权限，这里简单添加一个 ROLE_USER 角色
         List<GrantedAuthority> authorities = new ArrayList<>();
