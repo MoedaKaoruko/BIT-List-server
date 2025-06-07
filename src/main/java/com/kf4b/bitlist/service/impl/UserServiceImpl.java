@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 
 @Service
@@ -24,11 +25,8 @@ public class UserServiceImpl implements UserService {
     private UserRepository userRepository;
 
     @Override
-    public User getUserById(Integer userId) {
-        String sql = "SELECT * FROM testtab1";
-        List<Map<String,Object>> list=jdbcTemplate.queryForList(sql);
-        System.out.println(list);
-        User x =  userRepository.findById(userId);
+    public User getUserById(String userId) {
+        User x =  userRepository.findById(userId).get();
         return x == null ? new User() : x;
     }
 
@@ -44,7 +42,7 @@ public class UserServiceImpl implements UserService {
         user.setEmail("test@email");
         user.setUsername("test");
         user.setPassword("a045f8516fb790bf74fcd65f017d8852");
-        user.setUserId(1111);
+        user.setUserId("1111");
         return user;
 
         //return userRepository.findByEmail(email);

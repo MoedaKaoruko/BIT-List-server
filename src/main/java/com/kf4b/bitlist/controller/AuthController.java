@@ -76,7 +76,7 @@ public class AuthController {
         // 创建 User 对象
         User user;
         user = new User();
-        user.setUserId((Integer) userMap.get("id"));
+        user.setUserId((String) userMap.get("id"));
         user.setUsername((String) userMap.get("name"));
         user.setEmail((String) userMap.get("email"));
         user.setAvatarUri((String) userMap.get("avatarUri"));

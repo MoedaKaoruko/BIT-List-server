@@ -25,9 +25,12 @@ class BitListApplicationTests {
 
     @Test
     void contextLoads() throws Exception {
-        User x = userService.getUserByUsername("test");
-
-        System.out.println(x.getUserId());
+        User x = new User();
+        x.setUserId("1324345ysdg");
+        x.setEmail("test@email");
+        x.setUsername("test");
+        x.setPassword("adsgfadshe");
+        userRepository.save(x);
     }
 
 }

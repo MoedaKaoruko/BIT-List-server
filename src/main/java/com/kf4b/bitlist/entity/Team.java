@@ -10,39 +10,39 @@ import java.util.Set;
 @Table(name = "team")
 public class Team {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    @GeneratedValue(generator = "uuid")
+    private String team_id;
 
-    @Column(nullable = false)
+    @Column(name = "name", nullable = false)
     private String name;
 
-    @Column(nullable = false)
+    @Column(name = "description", nullable = false)
     private String description;
 
     @ElementCollection
     @CollectionTable(name = "team_members", joinColumns = @JoinColumn(name = "team_id"))
     @MapKeyColumn(name = "user_id")
     @Column(name = "role")
-    private Map<Integer, Role> members = new HashMap<>();
+    private Map<String, Role> members = new HashMap<>();
 
     @ElementCollection
     @CollectionTable(name = "team_tasks", joinColumns = @JoinColumn(name = "team_id"))
     @Column(name = "task_id")
-    private Set<Integer> tasks = new HashSet<>();
+    private Set<String> tasks = new HashSet<>();
 
     @ElementCollection
     @CollectionTable(name = "team_pending_join_requests", joinColumns = @JoinColumn(name = "team_id"))
     @Column(name = "user_id")
-    private Set<Integer> pendingJoinRequests = new HashSet<>();
+    private Set<String> pendingJoinRequests = new HashSet<>();
 
     public enum Role {
         ADMIN,
         MEMBER
     }
 
-    public Integer getId() { return this.id; }
+    public String getId() { return this.team_id; }
 
-    public void setId(Integer id) { this.id = id; }
+    public void setId(String id) { this.team_id = id; }
 
     public String getName() { return this.name; }
 
@@ -52,10 +52,10 @@ public class Team {
 
     public void setDescription(String description) { this.description = description; }
 
-    public Map<Integer, Role> getMembers() { return this.members; }
+    public Map<String, Role> getMembers() { return this.members; }
 
-    public void setMembers(Map<Integer, String> members){
-        for (Map.Entry<Integer, String> entry : members.entrySet()) {
+    public void setMembers(Map<String, String> members){
+        for (Map.Entry<String, String> entry : members.entrySet()) {
             String value = entry.getValue();
             // 仅接受完全匹配的枚举名称
             if ("ADMIN".equals(value) || "MEMBER".equals(value)) {
@@ -64,15 +64,15 @@ public class Team {
         }
     }
 
-    public Set<Integer> getTasks() { return this.tasks; }
+    public Set<String> getTasks() { return this.tasks; }
 
-    public void setTasks(Set<Integer> tasks) {
+    public void setTasks(Set<String> tasks) {
         this.tasks = tasks != null ? new HashSet<>(tasks) : new HashSet<>();
     }
 
-    public Set<Integer> getPendingJoinRequests() { return this.pendingJoinRequests; }
+    public Set<String> getPendingJoinRequests() { return this.pendingJoinRequests; }
 
-    public void setPendingJoinRequests(Set<Integer> pendingJoinRequests) {
+    public void setPendingJoinRequests(Set<String> pendingJoinRequests) {
         this.pendingJoinRequests = pendingJoinRequests != null ? new HashSet<>(pendingJoinRequests) : new HashSet<>();
     }
 }

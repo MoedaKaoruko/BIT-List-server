@@ -14,8 +14,8 @@ import java.util.Date;
 @Table(name = "user")
 public class User implements Serializable {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int userId;
+    @GeneratedValue(generator = "uuid")
+    private String user_id;
 
     @Column(name = "username", nullable = false,length = 50)
     private String username;
@@ -32,24 +32,24 @@ public class User implements Serializable {
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    @Column(name = "tokenExpiry")
+    @Column(name = "token_expiry")
     private Date tokenExpiry;
 
-    @Column(name = "loginState")
+    @Column(name = "login_state")
     private Boolean loginState;
 
-    @Column(name = "teamId")
+    @Column(name = "team_id")
     private Integer teamId;
 
-    @Column(name = "avatarUri")
+    @Column(name = "avatar_uri")
     private String avatarUri;
 
-    public int getUserId() {
-        return userId;
+    public String getUserId() {
+        return user_id;
     }
 
-    public void setUserId(int userId) {
-        this.userId = userId;
+    public void setUserId(String userId) {
+        this.user_id = userId;
     }
 
     public String getUsername() {
