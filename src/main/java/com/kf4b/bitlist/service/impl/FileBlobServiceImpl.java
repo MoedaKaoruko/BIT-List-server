@@ -43,7 +43,8 @@ public class FileBlobServiceImpl implements FileBlobService {
 
     @Transactional
     public void updateFileBlobById(Integer FileId, FileBlob file){
-        FileBlob f = fileBlobRepository.findById(FileId).get();
+        Optional<FileBlob> fs = fileBlobRepository.findById(FileId);
+        FileBlob f = fs.isPresent() ? fs.get() : new FileBlob();
         f.setFileBlob(file.getFileBlob());
         f.setTaskId(file.getTaskId());
         f.setSizeInBytes(file.getSizeInBytes());
