@@ -53,4 +53,9 @@ public class TeamServiceImpl implements TeamService {
 
 
     }
+
+    @Transactional
+    public void deleteTeam(Integer teamId) {
+        teamRepository.deleteById(teamId);
+    }
 }

@@ -3,6 +3,7 @@ package com.kf4b.bitlist.service.impl;
 import com.kf4b.bitlist.entity.User;
 import com.kf4b.bitlist.repository.UserRepository;
 import com.kf4b.bitlist.service.UserService;
+import com.kf4b.bitlist.util.JwtTokenUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,6 +58,27 @@ public class UserServiceImpl implements UserService {
         u.setAvatarUri(user.getAvatarUri());
         u.setPassword(user.getPassword());
         userRepository.save(u);
+    }
+
+    @Override
+    public User getUserByHeader(String header) {
+        String username = null;
+        String jwtToken = null;
+
+        if (header != null && header.startsWith("Bearer ")) {
+            jwtToken = header.substring(7);
+            try {
+                if(!JwtTokenUtil.isTokenExpired(jwtToken)){
+                    username = JwtTokenUtil.getUsernameFromToken(jwtToken);
+                    return userRepository.findByUsername(username);
+                }
+            } catch (Exception e) {
+                System.out.println("Unable to get JWT Token");
+            }
+        } else {
+            System.out.println("JWT Token does not begin with Bearer String");
+        }
+        return null;
     }
 }
 

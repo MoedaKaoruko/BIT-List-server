@@ -13,6 +13,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+
+import java.sql.Blob;
 import java.util.*;
 
 @Service
@@ -42,15 +44,27 @@ public class FileBlobServiceImpl implements FileBlobService {
     }
 
     @Transactional
-    public void updateFileBlobById(Integer FileId, FileBlob file){
+    public FileBlob updateFileBlobById(Integer FileId, FileBlob file){
         Optional<FileBlob> fs = fileBlobRepository.findById(FileId);
         FileBlob f = fs.isPresent() ? fs.get() : new FileBlob();
         f.setFileBlob(file.getFileBlob());
         f.setTaskId(file.getTaskId());
         f.setSizeInBytes(file.getSizeInBytes());
         f.setFileName(file.getFileName());
+        Map<Integer, FileBlob.Permission> permissions = new HashMap<>(file.getPermissions());
         f.getPermissions().clear();
-        f.getPermissions().putAll(file.getPermissions());
+        f.getPermissions().putAll(permissions);
         fileBlobRepository.save(f);
+        return f;
+    }
+
+    @Transactional
+    public void deleteFileBlob(Integer FileId){
+        fileBlobRepository.deleteFileBlob(FileId);
+    }
+
+    @Transactional
+    public void restoreFileBlob(Integer FileId){
+        fileBlobRepository.restoreFileBlob(FileId);
     }
 }

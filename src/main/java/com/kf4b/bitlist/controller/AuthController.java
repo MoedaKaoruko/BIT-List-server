@@ -1,8 +1,8 @@
 package com.kf4b.bitlist.controller;
 
 import com.kf4b.bitlist.entity.User;
+import com.kf4b.bitlist.service.EmailCodeService;
 import com.kf4b.bitlist.service.UserService;
-import com.kf4b.bitlist.util.CaptchaUtil;
 import com.kf4b.bitlist.util.HashUtil;
 import com.kf4b.bitlist.util.JwtTokenUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,10 +22,10 @@ public class AuthController {
     private JwtTokenUtil jwtTokenUtil;
 
     @Autowired
-    private CaptchaUtil captchaUtil;
+    private UserService userService;
 
     @Autowired
-    private UserService userService;
+    private EmailCodeService emailCodeService;
 
     @PostMapping("/login")
     public Map<String,Object> login(@RequestBody Map<String,Object> params) {
@@ -46,23 +46,30 @@ public class AuthController {
             map.put("error","用户名或密码错误");
             return map;
         }
-        String token = jwtTokenUtil.generateToken(user.getUsername());
-        map.put("token",token);
-        map.put("userId",user.getUserId());
+        try {;
+            String token = jwtTokenUtil.generateToken(user.getUsername());
+            map.put("token",token);
+            map.put("userId",user.getUserId());
+        }catch (Exception e){
+            map.put("error",e.getMessage());
+        }
         return map;
     }
 
     @PostMapping("/getCaptcha")
-    public Map<String,Object> getCaptcha(@RequestBody Map<String,Object> params) {
+    public boolean getCaptcha(@RequestBody Map<String,Object> params) {
         Map<String,Object> map = new HashMap<>();
         String email = (String) params.get("email");
         if(email == null){
-            map.put("error","邮箱为空");
-            return map;
+            return false;
         }
-        //TODO: 发送验证码
-        //captchaUtil.sendCaptcha(email,CaptchaUtil.generateCaptcha());
-        return map;
+        // 检查是否可以发送
+        int canSendAfter = emailCodeService.canSendCodeAfter(email);
+        if (canSendAfter > 0) {
+            return false;
+        }
+
+        return emailCodeService.sendVerificationCode(email);
     }
 
 
@@ -72,6 +79,15 @@ public class AuthController {
         Map<String, Object> userMap = (Map<String, Object>) requestBody.get("user");
         String password = (String) requestBody.get("password");
         String code = (String) requestBody.get("code");
+        String email = (String) userMap.get("email");
+
+        Map<String,Object> response = new HashMap<>();
+        //FIXME 此部分功能已经实现，使用前请配置邮箱服务，并取消注释
+//        if(!emailCodeService.verifyCode(email, code)){
+//            response.put("message", "验证码错误");
+//            response.put("success", false);
+//            return response;
+//        }
 
         // 创建 User 对象
         User user;
@@ -80,15 +96,9 @@ public class AuthController {
         user.setUsername((String) userMap.get("name"));
         user.setEmail((String) userMap.get("email"));
         user.setAvatarUri((String) userMap.get("avatarUri"));
-
-        Map<String, Object> response = new HashMap<>();
-        if(requestBody.get("code") == null || !captchaUtil.checkCaptcha(user.getEmail(),code)){
-            response.put("message", "验证码错误");
-            return response;
-        }
+        user.setPassword(HashUtil.getHash(password));
         try {
-            // TODO 调用用户服务进行注册操作
-            // userService.register(user, password);
+            userService.updateUserById(-1,user);
             response.put("message", "注册成功");
             response.put("success", true);
         } catch (Exception e) {

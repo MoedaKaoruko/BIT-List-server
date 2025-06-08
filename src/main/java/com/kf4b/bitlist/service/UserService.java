@@ -21,4 +21,6 @@ public interface UserService {
 
     // 更新用户信息
     void updateUserById(Integer userId, User user);
+
+    User getUserByHeader(String token);
 }

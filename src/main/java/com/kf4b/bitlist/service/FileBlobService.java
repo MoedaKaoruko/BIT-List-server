@@ -1,6 +1,8 @@
 package com.kf4b.bitlist.service;
 
 import com.kf4b.bitlist.entity.*;
+import org.springframework.data.jpa.repository.Query;
+
 import java.util.*;
 
 public interface FileBlobService {
@@ -12,6 +14,12 @@ public interface FileBlobService {
     List<FileBlob> getFileBlobByTaskId(Integer TaskId);
 
     // 更新操作
-    void updateFileBlobById(Integer FileId, FileBlob file);
+    FileBlob updateFileBlobById(Integer FileId, FileBlob file);
+
+    // 删除操作
+    void deleteFileBlob(Integer FileId);
+
+    // 恢复操作
+    void restoreFileBlob(Integer FileId);
 
 }

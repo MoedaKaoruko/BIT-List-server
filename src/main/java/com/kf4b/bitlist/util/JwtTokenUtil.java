@@ -1,5 +1,6 @@
 package com.kf4b.bitlist.util;
 
+import com.kf4b.bitlist.entity.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -14,22 +15,21 @@ import java.util.Map;
 public class JwtTokenUtil {
 
     @Value("${jwt.secret}")
-    private String secret;
+    private static final String secret = "vY3pU2rS2gC7gS6yZ0yP0dF6rY4cC3dF0cF0tQ0kQ0fO5dI2vK2oO5dB0nV6iW4yB9hR3oB6gG9nS3hH3dZ2rN0qF3mB0gS9fM3t";
 
-    @Value("${jwt.expiration}")
-    private Long expiration;
+    private static final int expiration = 3600;
 
     /**
      * 生成 Token
-     * @param userId 用户名
+     * @param username 用户名
      * @return Token 字符串
      */
-    public String generateToken(String userId) {
+    public static String generateToken(String username) {
         Map<String, Object> claims = new HashMap<>();
-        return doGenerateToken(claims, userId);
+        return doGenerateToken(claims, username);
     }
 
-    private String doGenerateToken(Map<String, Object> claims, String subject) {
+    private static String doGenerateToken(Map<String, Object> claims, String subject) {
         return Jwts.builder()
                 .setClaims(claims)
                 .setSubject(subject)
@@ -42,12 +42,12 @@ public class JwtTokenUtil {
     /**
      * 验证 Token
      * @param token Token 字符串
-     * @param userId 用户名
+     * @param username 用户名
      * @return 是否验证通过
      */
-    public Boolean validateToken(String token, String userId) {
-        final String tokenUsername = getUserIdFromToken(token);
-        return (tokenUsername.equals(userId) && !isTokenExpired(token));
+    public static Boolean validateToken(String token, String username) {
+        final String tokenUsername = getUsernameFromToken(token);
+        return (tokenUsername.equals(username) && !isTokenExpired(token));
     }
 
     /**
@@ -55,24 +55,24 @@ public class JwtTokenUtil {
      * @param token Token 字符串
      * @return 用户名
      */
-    public String getUserIdFromToken(String token) {
+    public static String getUsernameFromToken(String token) {
         final Claims claims = getClaimsFromToken(token);
         return claims.getSubject();
     }
 
-    private Claims getClaimsFromToken(String token) {
+    private static Claims getClaimsFromToken(String token) {
         return Jwts.parser()
                 .setSigningKey(secret)
                 .parseClaimsJws(token)
                 .getBody();
     }
 
-    private Boolean isTokenExpired(String token) {
+    public static Boolean isTokenExpired(String token) {
         final Date expiration = getExpirationDateFromToken(token);
         return expiration.before(new Date());
     }
 
-    private Date getExpirationDateFromToken(String token) {
+    private static Date getExpirationDateFromToken(String token) {
         final Claims claims = getClaimsFromToken(token);
         return claims.getExpiration();
     }

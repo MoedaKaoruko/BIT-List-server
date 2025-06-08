@@ -1,49 +1,155 @@
 package com.kf4b.bitlist.controller;
 
 import com.kf4b.bitlist.entity.FileBlob;
+import com.kf4b.bitlist.service.FileBlobService;
+import com.kf4b.bitlist.service.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/tasks/{taskId}/fileblob")
+@RequestMapping("/tasks/{taskId}/attachments")
 public class FileBlobController {
-    // 假设文件保存目录（可根据实际需求修改）
-    private static final String UPLOAD_DIR = "uploads/";
+    @Autowired
+    private FileBlobService fileBlobService;
 
-    @PostMapping(value = "/", consumes = "multipart/form-data")
-    public FileBlob createAttachment(
-            @PathVariable String taskId,
-            @RequestParam("file") MultipartFile file  // 接收上传的文件
+    @Autowired
+    private UserService userService;
+
+    /**
+     * 检查权限：用户是否有操作指定任务的附件的权限
+     */
+    private boolean checkPermission(Integer userId, Integer taskId) {
+        //
+        return true;
+    }
+
+    /**
+     * 上传文件到指定任务
+     *
+     * @param taskId 任务ID
+     * @param file   上传的文件
+     * @return 上传成功的文件信息
+     * @throws IOException 如果文件上传失败
+     */
+    @PostMapping(value = "/upload", consumes = "multipart/form-data")
+    public Map<String, Object> upload(
+            @RequestHeader("Authorization") String authorizationHeader,
+            @PathVariable Integer taskId,
+            @RequestParam("file") MultipartFile file
     ) throws IOException {
-        // 生成唯一文件名（避免重复）
-        String originalFilename = file.getOriginalFilename();
-        String extension = originalFilename.substring(originalFilename.lastIndexOf("."));
-        String uniqueFileName = UUID.randomUUID() + extension;
-
-        // 创建保存路径（需确保目录存在）
-        Path uploadPath = Paths.get(UPLOAD_DIR).toAbsolutePath().normalize();
-        if (!Files.exists(uploadPath)) {
-            Files.createDirectories(uploadPath);
+        if (!checkPermission(userService.getUserByHeader(authorizationHeader).getUserId(), taskId)) {
+            Map<String, Object> result = new HashMap<>();
+            result.put("success", false);
+            result.put("message", "Permission denied");
+            return result;
         }
+        String originalFilename = file.getOriginalFilename();
 
-        // 保存文件到本地
-        Path targetPath = uploadPath.resolve(uniqueFileName);
-        file.transferTo(targetPath);
-
-        //TODO 构建Attachment对象
+        // 构建FileBlob对象
         FileBlob fileBlob = new FileBlob();
-//        attachment.setTaskId(taskId);
-//        attachment.setFileName(originalFilename);
-//        attachment.setFilePath(targetPath.toString());
-//        attachment.setFileSize(file.getSize());
+        fileBlob.setFileName(originalFilename);  // 数据库存储的文件名
+        fileBlob.setSizeInBytes((int) file.getSize());  // 文件大小
+        fileBlob.setFileBlob(file.getBytes());  // 文件内容转为字节数组存入Blob字段
+        fileBlob.setTaskId(taskId);  // 关联任务ID
+        fileBlob.setDeleted(false);  // 默认未删除
 
-        // 这里可以添加数据库保存逻辑（如调用Service层存储attachment信息）
-        // attachmentService.save(attachment);
+        // 调用Service保存到数据库
+        fileBlob = fileBlobService.updateFileBlobById(-1, fileBlob);
 
-        return fileBlob;  // 返回上传后的文件信息
+        // 返回成功信息
+        Map<String, Object> result = new HashMap<>();
+        result.put("success", true);
+        result.put("message", "File uploaded successfully");
+        result.put("id", fileBlob.getId());
+        result.put("fileName", fileBlob.getFileName());
+        result.put("sizeInBytes", fileBlob.getSizeInBytes());
+        result.put("isDeleted", fileBlob.isDeleted());
+        result.put("permissions", fileBlob.getPermissions());
+        result.put("deletedAt", "2019-08-24");
+        result.put("file", null);
+        result.put("attachmentLink", null);
+        return result;
+    }
+
+    /**
+     * 下载指定任务的附件
+     **/
+    @GetMapping("/{attachmentId}/download")
+    public ResponseEntity<byte[]> download(@RequestHeader("Authorization") String authorizationHeader,
+                                           @PathVariable Integer taskId,
+                                           @PathVariable Integer attachmentId) throws IOException {
+
+        FileBlob fileBlob = fileBlobService.getFileBlobById(attachmentId);
+        if (fileBlob == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        if (!checkPermission(userService.getUserByHeader(authorizationHeader).getUserId(), taskId)) {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(org.springframework.http.MediaType.APPLICATION_OCTET_STREAM);
+        String encodedFilename = URLEncoder.encode(fileBlob.getFileName(), "utf-8")
+                .replace("+", "%20");
+        headers.setContentDispositionFormData("attachment", encodedFilename);
+        return new ResponseEntity<>(fileBlob.getFileBlob(), headers, HttpStatus.OK);
+    }
+
+    /**
+     * 删除指定附件
+     **/
+    @DeleteMapping("/{attachmentId}")
+    public boolean delete(@RequestHeader("Authorization") String authorizationHeader,
+                          @PathVariable Integer taskId,
+                          @PathVariable Integer attachmentId) {
+        // 检查权限
+        if (!checkPermission(userService.getUserByHeader(authorizationHeader).getUserId(), taskId)) {
+            return false;
+        }
+        fileBlobService.deleteFileBlob(attachmentId);
+        return true;
+    }
+
+    @PostMapping("/{attachmentId}/restore")
+    public boolean restore(@RequestHeader("Authorization") String authorizationHeader,
+                           @PathVariable Integer taskId,
+                           @PathVariable Integer attachmentId) {
+        // 检查权限
+        if (!checkPermission(userService.getUserByHeader(authorizationHeader).getUserId(), taskId)) {
+            return false;
+        }
+        fileBlobService.restoreFileBlob(attachmentId);
+        return true;
+    }
+
+    @PutMapping("/{attachmentId}/permissions")
+    public boolean updatePermissions(@RequestHeader("Authorization") String authorizationHeader,
+                                     @PathVariable Integer taskId,
+                                     @PathVariable Integer attachmentId,
+                                     @RequestBody Map<String, Object> requestMap) {
+        // 检查权限
+        if (!checkPermission(userService.getUserByHeader(authorizationHeader).getUserId(), taskId)) {
+            return false;
+        }
+        FileBlob fileBlob = fileBlobService.getFileBlobById(attachmentId);
+        if (fileBlob == null) {
+            return false;
+        }
+        Map<Integer, FileBlob.Permission> permissions = new HashMap<>();
+        permissions.putAll((Map<Integer, FileBlob.Permission>) requestMap.get("permissions"));
+        fileBlob.setPermissions(permissions);
+        fileBlobService.updateFileBlobById(fileBlob.getId(), fileBlob);
+        return true;
     }
 }

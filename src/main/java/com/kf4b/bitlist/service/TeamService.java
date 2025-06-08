@@ -11,4 +11,7 @@ public interface TeamService {
     // 更新操作
     void updateTeamById(Integer teamId, Team team);
 
+    // 删除操作
+    void deleteTeam(Integer teamId);
+
 }
