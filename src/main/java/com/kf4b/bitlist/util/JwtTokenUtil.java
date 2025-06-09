@@ -17,7 +17,7 @@ public class JwtTokenUtil {
     @Value("${jwt.secret}")
     private static final String secret = "vY3pU2rS2gC7gS6yZ0yP0dF6rY4cC3dF0cF0tQ0kQ0fO5dI2vK2oO5dB0nV6iW4yB9hR3oB6gG9nS3hH3dZ2rN0qF3mB0gS9fM3t";
 
-    private static final int expiration = 3600;
+    private static final int expiration = 360000;
 
     /**
      * 生成 Token

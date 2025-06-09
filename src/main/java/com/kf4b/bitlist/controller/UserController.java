@@ -1,13 +1,15 @@
 package com.kf4b.bitlist.controller;
 
 import com.kf4b.bitlist.entity.MindedItem;
+import com.kf4b.bitlist.entity.Task;
+import com.kf4b.bitlist.entity.Team;
 import com.kf4b.bitlist.entity.User;
 import com.kf4b.bitlist.service.MindedItemService;
+import com.kf4b.bitlist.service.TaskService;
+import com.kf4b.bitlist.service.TeamService;
 import com.kf4b.bitlist.service.UserService;
 import com.kf4b.bitlist.util.JwtTokenUtil;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
@@ -23,6 +25,12 @@ public class UserController {
 
     @Autowired
     private MindedItemService mindedItemService;
+
+    @Autowired
+    private TaskService taskService;
+
+    @Autowired
+    private TeamService teamService;
 
     @Autowired
     private JwtTokenUtil jwtTokenUtil;
@@ -89,11 +97,37 @@ public class UserController {
     }
 
     @GetMapping("/stats")
-    public Map<String, Object> getUserStats(@RequestHeader("Authorization") String token) {
-        //String userId = jwtTokenUtil.getUserIdFromToken(token.substring(7));
-        //return userService.getUserStats(userId);
-        Map<String, Object> map = new HashMap<>();
-        return map;
+    public Map<String, Object> getUserStats(@RequestHeader("Authorization") String token,
+                                            @RequestParam Integer userId) {
+        User user = userService.getUserByHeader(token);
+        Map<String, Object> result = new HashMap<>();
+        if(user.getUserId().equals(userId)){
+            result.put("message", "validation error");
+            result.put("success", "false");
+            return result;
+        }
+        int completedTasks = 0;
+        int inProgressTasks = 0;
+        int totalTeams = 0;
+        int totalFocusTime = 0;
+        List<Task> taskList = taskService.getTaskByUserId(userId);
+        for (Task task : taskList) {
+            if (task.getStatus() == Task.Status.DONE) {
+                completedTasks++;
+            }else if (task.getStatus() == Task.Status.IN_PROGRESS) {
+                inProgressTasks++;
+            }
+        }
+
+        //TODO 获取团队信息
+
+        totalFocusTime = mindedItemService.totalDurationInSeconds(userId);
+        result.put("completedTasks", completedTasks);
+        result.put("inProgressTasks", inProgressTasks);
+        result.put("totalTeams", totalTeams);
+        result.put("totalFocusTime", totalFocusTime);
+        result.put("success", "true");
+        return result;
     }
 
     @GetMapping("/focus")
