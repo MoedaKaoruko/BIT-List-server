@@ -1,7 +1,10 @@
 package com.kf4b.bitlist.controller;
 
 import com.kf4b.bitlist.entity.FileBlob;
+import com.kf4b.bitlist.entity.Task;
 import com.kf4b.bitlist.service.FileBlobService;
+import com.kf4b.bitlist.service.TaskService;
+import com.kf4b.bitlist.service.TeamService;
 import com.kf4b.bitlist.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -12,11 +15,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.*;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
+import java.util.Objects;
 
 @RestController
 @RequestMapping("/tasks/{taskId}/attachments")
@@ -27,12 +28,25 @@ public class FileBlobController {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private TaskService taskService;
+
+    @Autowired
+    private TeamService teamService;
+
     /**
      * 检查权限：用户是否有操作指定任务的附件的权限
      */
-    private boolean checkPermission(Integer userId, Integer taskId) {
-        //
-        return true;
+    private boolean checkPermissionFailure(Integer userId, Integer taskId) {
+        Task task = taskService.getTaskById(taskId);
+        if (task == null) {
+            return true;
+        }
+        if (Objects.equals(task.getAssignedTo(), userId)) {
+            return false;
+        }else {
+            return true;
+        }
     }
 
     /**
@@ -49,7 +63,7 @@ public class FileBlobController {
             @PathVariable Integer taskId,
             @RequestParam("file") MultipartFile file
     ) throws IOException {
-        if (!checkPermission(userService.getUserByHeader(authorizationHeader).getUserId(), taskId)) {
+        if (checkPermissionFailure(userService.getUserByHeader(authorizationHeader).getUserId(), taskId)) {
             Map<String, Object> result = new HashMap<>();
             result.put("success", false);
             result.put("message", "Permission denied");
@@ -95,7 +109,7 @@ public class FileBlobController {
         if (fileBlob == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        if (!checkPermission(userService.getUserByHeader(authorizationHeader).getUserId(), taskId)) {
+        if (checkPermissionFailure(userService.getUserByHeader(authorizationHeader).getUserId(), taskId)) {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
         HttpHeaders headers = new HttpHeaders();
@@ -114,7 +128,7 @@ public class FileBlobController {
                           @PathVariable Integer taskId,
                           @PathVariable Integer attachmentId) {
         // 检查权限
-        if (!checkPermission(userService.getUserByHeader(authorizationHeader).getUserId(), taskId)) {
+        if (checkPermissionFailure(userService.getUserByHeader(authorizationHeader).getUserId(), taskId)) {
             return false;
         }
         fileBlobService.deleteFileBlob(attachmentId);
@@ -126,7 +140,7 @@ public class FileBlobController {
                            @PathVariable Integer taskId,
                            @PathVariable Integer attachmentId) {
         // 检查权限
-        if (!checkPermission(userService.getUserByHeader(authorizationHeader).getUserId(), taskId)) {
+        if (checkPermissionFailure(userService.getUserByHeader(authorizationHeader).getUserId(), taskId)) {
             return false;
         }
         fileBlobService.restoreFileBlob(attachmentId);
@@ -139,7 +153,7 @@ public class FileBlobController {
                                      @PathVariable Integer attachmentId,
                                      @RequestBody Map<String, Object> requestMap) {
         // 检查权限
-        if (!checkPermission(userService.getUserByHeader(authorizationHeader).getUserId(), taskId)) {
+        if (checkPermissionFailure(userService.getUserByHeader(authorizationHeader).getUserId(), taskId)) {
             return false;
         }
         FileBlob fileBlob = fileBlobService.getFileBlobById(attachmentId);

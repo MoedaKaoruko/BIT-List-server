@@ -101,7 +101,7 @@ public class UserController {
                                             @RequestParam Integer userId) {
         User user = userService.getUserByHeader(token);
         Map<String, Object> result = new HashMap<>();
-        if(user.getUserId().equals(userId)){
+        if(!user.getUserId().equals(userId)){
             result.put("message", "validation error");
             result.put("success", "false");
             return result;
@@ -110,18 +110,29 @@ public class UserController {
         int inProgressTasks = 0;
         int totalTeams = 0;
         int totalFocusTime = 0;
+
+        // 获取任务信息
         List<Task> taskList = taskService.getTaskByUserId(userId);
-        for (Task task : taskList) {
-            if (task.getStatus() == Task.Status.DONE) {
-                completedTasks++;
-            }else if (task.getStatus() == Task.Status.IN_PROGRESS) {
-                inProgressTasks++;
+        if (taskList!=null){
+            for (Task task : taskList) {
+                if (task.getStatus() == Task.Status.DONE) {
+                    completedTasks++;
+                }else if (task.getStatus() == Task.Status.IN_PROGRESS) {
+                    inProgressTasks++;
+                }
             }
         }
 
-        //TODO 获取团队信息
+        // 获取团队信息
+        List<Team> teamList = teamService.getTeamsByUserId(userId);
+        if (teamList!=null){
+            totalTeams = teamList.size();
+        }
 
+        // 获取专注时间信息
         totalFocusTime = mindedItemService.totalDurationInSeconds(userId);
+
+        // 构建返回结果
         result.put("completedTasks", completedTasks);
         result.put("inProgressTasks", inProgressTasks);
         result.put("totalTeams", totalTeams);
@@ -130,10 +141,15 @@ public class UserController {
         return result;
     }
 
-    @GetMapping("/focus")
-    public List<MindedItem> getUserMindedItem(@RequestHeader("Authorization") String token) {
+    @PostMapping("/focus")
+    public boolean getUserMindedItem(@RequestHeader("Authorization") String token,
+                                              @RequestBody MindedItem mindedItem) {
         User user = userService.getUserByHeader(token);
-        return mindedItemService.getMindedItemByUserId(user.getUserId());
+        if(!user.getUserId().equals(mindedItem.getUserId())){
+            return false;
+        }
+        mindedItemService.updateMindedItemById(-1, mindedItem);
+        return true;
     }
 
 }
