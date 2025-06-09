@@ -11,6 +11,9 @@ public interface TeamService {
     // 更新操作
     void updateTeamById(Integer teamId, Team team);
 
+    // 根据用户ID查找所在团队列表
+    List<Team> getTeamsByUserId(Integer userId);
+
     // 删除操作
     void deleteTeam(Integer teamId);
 

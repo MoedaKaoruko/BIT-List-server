@@ -54,6 +54,21 @@ public class TeamServiceImpl implements TeamService {
 
     }
 
+    @Override
+    @Transactional
+    public List<Team> getTeamsByUserId(Integer userId) {
+        List<Team> list = teamRepository.findByMemberUserId(userId);
+        if(list.isEmpty()){
+            return null;
+        }
+        for (Team team : list) {
+            Hibernate.initialize(team.getMembers());
+            Hibernate.initialize(team.getTasks());
+            Hibernate.initialize(team.getPendingJoinRequests());
+        }
+        return list;
+    }
+
     @Transactional
     public void deleteTeam(Integer teamId) {
         teamRepository.deleteById(teamId);
