@@ -41,9 +41,7 @@ public class UserController {
      */
     @GetMapping("/profile")
     public User getUserProfile(@RequestHeader("Authorization") String token) {
-        //String userId = jwtTokenUtil.getUserIdFromToken(token.substring(7));
-        //return userService.getUserById(userId);
-        return userService.getUserById(1);
+        return userService.getUserByHeader(token);
     }
 
     /**
