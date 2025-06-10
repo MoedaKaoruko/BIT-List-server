@@ -59,6 +59,7 @@ public class UserServiceImpl implements UserService {
         u.setLoginState(user.getLoginState());
         u.setAvatarUri(user.getAvatarUri());
         u.setPassword(user.getPassword());
+        u.setSchool(user.getSchool());
         userRepository.save(u);
     }
 

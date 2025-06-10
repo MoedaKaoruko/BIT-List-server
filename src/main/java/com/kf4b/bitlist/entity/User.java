@@ -38,6 +38,9 @@ public class User implements Serializable {
     @Column(name = "stu_id")
     private String stuId;
 
+    @Column(name = "school")
+    private String school;
+
     @Column(name = "login_state")
     private Boolean loginState;
 
@@ -114,5 +117,13 @@ public class User implements Serializable {
 
     public void setStuId(String stu_id) {
         this.stuId = stu_id;
+    }
+
+    public String getSchool() {
+        return school;
+    }
+
+    public void setSchool(String school) {
+        this.school = school;
     }
 }
