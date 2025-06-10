@@ -1,6 +1,7 @@
 package com.kf4b.bitlist.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.kf4b.bitlist.converter.JsonListConverter;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
@@ -44,7 +45,8 @@ public class Task {
     private Integer order;
 
     @Column(name = "checklist")
-    private String checklist;
+    @Convert(converter = JsonListConverter.class)
+    private List<CheckListItem> checklist;
 
     @Column(name = "is_recurring")
     private boolean isRecurring = false;
@@ -59,7 +61,8 @@ public class Task {
     private Date recurringEndDate;
 
     @Column(name = "recurring_on_days")
-    private String recurringOnDays;
+    @Convert(converter = JsonListConverter.class)
+    private List<Integer> recurringOnDays;
 
     @Column(name = "reminder_settings")
     private String reminderSettings;
@@ -163,11 +166,11 @@ public class Task {
     }
 
 
-    public String getChecklist() {
+    public List<CheckListItem> getChecklist() {
         return checklist;
     }
 
-    public void setChecklist(String checklist) {
+    public void setChecklist(List<CheckListItem> checklist) {
         this.checklist = checklist;
     }
 
@@ -177,14 +180,6 @@ public class Task {
 
     public void setRecurring(boolean recurring) {
         isRecurring = recurring;
-    }
-
-    public RecurringType getRecurrenceType() {
-        return recurringType;
-    }
-
-    public void setRecurrenceType(RecurringType recurringType) {
-        this.recurringType = recurringType;
     }
 
     public RecurringType getRecurringType() {
@@ -203,11 +198,11 @@ public class Task {
         this.recurringEndDate = recurringEndDate;
     }
 
-    public String getRecurringOnDays() {
+    public List<Integer> getRecurringOnDays() {
         return recurringOnDays;
     }
 
-    public void setRecurringOnDays(String recurrenceOnDays) {
+    public void setRecurringOnDays(List<Integer> recurrenceOnDays) {
         this.recurringOnDays = recurrenceOnDays;
     }
 
