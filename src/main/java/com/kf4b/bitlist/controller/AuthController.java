@@ -73,7 +73,7 @@ public class AuthController {
     }
 
 
-    @PostMapping("/register")
+    @PostMapping("/verifyCode")
     public Map<String, Object> register(@RequestBody Map<String, Object> requestBody) {
         // 从请求体中提取用户信息
         Map<String, Object> userMap = (Map<String, Object>) requestBody.get("user");

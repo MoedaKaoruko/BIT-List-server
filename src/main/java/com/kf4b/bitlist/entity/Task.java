@@ -43,6 +43,33 @@ public class Task {
     @Column(name = "task_order", nullable = false)
     private Integer order;
 
+    @Column(name = "checklist")
+    private String checklist;
+
+    @Column(name = "is_recurring")
+    private boolean isRecurring = false;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "recurring_type")
+    private RecurringType recurringType = RecurringType.WEEKLY;
+
+    @Column(name = "recurring_end_date")
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    private Date recurringEndDate;
+
+    @Column(name = "recurring_on_days")
+    private String recurringOnDays;
+
+    @Column(name = "reminder_settings")
+    private String reminderSettings;
+
+
+    @Column(name = "deleted_at", nullable = false)
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    private Date deletedAt;
+
     @Column(name = "is_deleted")
     private boolean isDeleted = false;
 
@@ -65,6 +92,10 @@ public class Task {
 
     public enum Status {
         TODO, IN_PROGRESS, DONE
+    }
+
+    public enum RecurringType {
+        WEEKLY, MONTHLY
     }
 
     public Integer getId() {
@@ -129,6 +160,71 @@ public class Task {
 
     public void setOrder(Integer order) {
         this.order = order;
+    }
+
+
+    public String getChecklist() {
+        return checklist;
+    }
+
+    public void setChecklist(String checklist) {
+        this.checklist = checklist;
+    }
+
+    public boolean isRecurring() {
+        return isRecurring;
+    }
+
+    public void setRecurring(boolean recurring) {
+        isRecurring = recurring;
+    }
+
+    public RecurringType getRecurrenceType() {
+        return recurringType;
+    }
+
+    public void setRecurrenceType(RecurringType recurringType) {
+        this.recurringType = recurringType;
+    }
+
+    public RecurringType getRecurringType() {
+        return recurringType;
+    }
+
+    public void setRecurringType(RecurringType recurringType) {
+        this.recurringType = recurringType;
+    }
+
+    public Date getRecurringEndDate() {
+        return recurringEndDate;
+    }
+
+    public void setRecurringEndDate(Date recurringEndDate) {
+        this.recurringEndDate = recurringEndDate;
+    }
+
+    public String getRecurringOnDays() {
+        return recurringOnDays;
+    }
+
+    public void setRecurringOnDays(String recurrenceOnDays) {
+        this.recurringOnDays = recurrenceOnDays;
+    }
+
+    public String getReminderSettings() {
+        return reminderSettings;
+    }
+
+    public void setReminderSettings(String reminderSettings) {
+        this.reminderSettings = reminderSettings;
+    }
+
+    public Date getDeletedAt() {
+        return deletedAt;
+    }
+
+    public void setDeletedAt(Date deletedAt) {
+        this.deletedAt = deletedAt;
     }
 
     public boolean isDeleted() {
