@@ -53,7 +53,9 @@ public class UserServiceImpl implements UserService {
         User u = us.isPresent() ? us.get() : new User();
         u.setEmail(user.getEmail());
         u.setUsername(user.getUsername());
+        u.setGrade(user.getGrade());
         u.setBirth(user.getBirth());
+        u.setStuId(user.getStuId());
         u.setLoginState(user.getLoginState());
         u.setAvatarUri(user.getAvatarUri());
         u.setPassword(user.getPassword());

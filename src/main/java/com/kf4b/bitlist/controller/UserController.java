@@ -12,9 +12,7 @@ import com.kf4b.bitlist.util.JwtTokenUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import javax.swing.text.DateFormatter;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -61,13 +59,13 @@ public class UserController {
             user.setEmail((String) requestMap.get("email"));
         }
         if(requestMap.containsKey("grade")) {
-            //user.set((String) requestMap.get("grade"));
+            user.setGrade((String) requestMap.get("grade"));
         }
         if(requestMap.containsKey("birth")) {
             user.setBirth((Date) requestMap.get("birth"));
         }
         if(requestMap.containsKey("stuId")) {
-            //user.setStuId((String) requestMap.get("stuId"));
+            user.setStuId((String) requestMap.get("stuId"));
         }
         if(requestMap.containsKey("avatarUri")) {
             user.setAvatarUri((String) requestMap.get("avatarUri"));

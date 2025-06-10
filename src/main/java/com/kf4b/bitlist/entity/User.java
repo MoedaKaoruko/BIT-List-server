@@ -27,11 +27,16 @@ public class User implements Serializable {
     @Email(message = "请输入正确邮箱格式")
     private String email;
 
+    @Column(name = "grade")
+    private String grade;
 
     @JsonFormat(pattern = "yyyy-MM-dd")
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     @Column(name = "birth")
     private Date birth;
+
+    @Column(name = "stu_id")
+    private String stuId;
 
     @Column(name = "login_state")
     private Boolean loginState;
@@ -93,5 +98,21 @@ public class User implements Serializable {
 
     public void setAvatarUri(String avatarUri) {
         this.avatarUri = avatarUri;
+    }
+
+    public String getGrade() {
+        return grade;
+    }
+
+    public void setGrade(String grade) {
+        this.grade = grade;
+    }
+
+    public String getStuId() {
+        return stuId;
+    }
+
+    public void setStuId(String stu_id) {
+        this.stuId = stu_id;
     }
 }

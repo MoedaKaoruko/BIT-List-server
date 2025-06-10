@@ -43,12 +43,18 @@ public class TeamServiceImpl implements TeamService {
         Team t = ts.isPresent() ? ts.get() : new Team();
         t.setName(team.getName());
         t.setDescription(team.getDescription());
+
+        Map<Integer, Team.Role> members = new HashMap<>(team.getMembers());
         t.getMembers().clear();
-        t.getMembers().putAll(team.getMembers());
+        t.getMembers().putAll(members);
+
+        Set<Integer> tasks = new HashSet<>(team.getTasks());
         t.getTasks().clear();
-        t.getTasks().addAll(team.getTasks());
+        t.getTasks().addAll(tasks);
+
+        Set<Integer> pendingJoinRequests = new HashSet<>(team.getPendingJoinRequests());
         t.getPendingJoinRequests().clear();
-        t.getPendingJoinRequests().addAll(team.getPendingJoinRequests());
+        t.getPendingJoinRequests().addAll(pendingJoinRequests);
         teamRepository.save(t);
 
 

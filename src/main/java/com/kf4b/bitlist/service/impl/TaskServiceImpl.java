@@ -62,8 +62,11 @@ public class TaskServiceImpl implements TaskService {
         x.setStatus(task.getStatus());
         x.setDueDate(task.getDueDate());
         x.setTitle(task.getTitle());
+
+        List<String> tags = new ArrayList<>(task.getTags());
         x.getTags().clear();
-        x.getTags().addAll(task.getTags());
+        x.getTags().addAll(tags);
+
         x.setParentTaskId(task.getParentTaskId());
         x.setChecklist(task.getChecklist());
         x.setRecurring(task.isRecurring());
