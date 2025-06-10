@@ -252,6 +252,7 @@ public class UserController {
         result.put("completionRateTrend", completionRateTrend);
         result.put("recentTaskSummary", recentTaskSummary);
         result.put("timeAllocationReport", timeAllocationReport);
+        result.put("suggestion", "你做的非常棒！");
         return result;
     }
 
